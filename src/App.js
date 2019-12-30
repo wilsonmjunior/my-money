@@ -1,19 +1,44 @@
 
-import React from 'react';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import React from 'react'
+import { Route, Switch, Redirect } from 'react-router-dom'
+import { isAuthenticated } from './Hooks/useAuth'
 
-import Header from './Components/Header';
-import Home from "./Pages/Home";
-import Movimentacoes from './Pages/Movimentacoes';
+import Login from './Pages/Login'
+import Home from './Pages/Home'
+import Movimentacoes from './Pages/Movimentacoes'
+import Header from './Components/Header'
 
-function App () {
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  <Route
+    {...rest}
+    render={(props) =>
+      isAuthenticated() ? (
+        <>
+          <Header history={props.history} />
+          <Component {...props} />
+        </>
+      ) : (
+          <Redirect
+            to={{
+              pathname: '/login',
+              state: { from: props.location },
+            }}
+          />
+        )
+    }
+  />
+);
+
+const App = () => {
   return (
-    <Router>
-      <Header />
-      <Route path="/" exact component={Home} />
-      <Route path="/movimentacoes/:data" exact component={Movimentacoes} />
-    </Router>
-  );
+    <>
+      <Switch>
+        <Route path="/login" exact component={Login} />
+        <PrivateRoute path="/" exact component={Home} />
+        <PrivateRoute path="/movimentacoes/:data" exact component={Movimentacoes} />
+      </Switch>
+    </>
+  )
 }
 
-export default App;
+export default App

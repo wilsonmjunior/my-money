@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 
-const Input = ({ value, alterar, viewAs }) => {
+const Input = ({ viewAs, value, alterar  }) => {
   const [isEditing, setIsEditing] = useState(false)
   const inputEditRef = useRef('')
 

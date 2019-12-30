@@ -1,30 +1,30 @@
-import React, {useState, useRef} from 'react';
-import { Redirect } from 'react-router-dom';
+import React, {useState, useRef} from 'react'
+import { Redirect } from 'react-router-dom'
 
-const minAno = 2019;
-const maxAno = 2022;
+const minAno = 2019
+const maxAno = 2022
 
 const AdicionarMes = () => {
   const anoRef = useRef()
-  const mesRef = useRef();
-  const [dir, setDir] = useState('');
+  const mesRef = useRef()
+  const [dir, setDir] = useState('')
 
-  const anos = [];
-  const meses = [];
+  const anos = []
+  const meses = []
 
   for (let i = minAno; i < maxAno; i++) {
-    anos.push(i);
+    anos.push(i)
   }
   for (let i = 1; i <= 12; i++) {
-    meses.push(i);
+    meses.push(i)
   }
 
   const ZeroPad = num => {
-    return num < 10 ? `0${num}` : num;
+    return num < 10 ? `0${num}` : num
   }
 
   const verMes = () => {
-    setDir(`${anoRef.current.value}-${mesRef.current.value}`);
+    setDir(`${anoRef.current.value}-${mesRef.current.value}`)
   }
 
   if (dir !== '') {
@@ -57,6 +57,6 @@ const AdicionarMes = () => {
         </div>
       </div>
     </>
-  );
+  )
 }
-export default AdicionarMes;
+export default AdicionarMes

@@ -1,28 +1,11 @@
 import { useReducer, useEffect } from 'react'
+import { getToken } from './useAuth'
+
 import api from '../api'
+import { reducer, INITIAL_STATE } from '../reducer'
 
-const INITIAL_STATE = {
-  loading: true,
-  data: {}
-}
+// axios.defaults.validateStatus = code => code < 500
 
-const reducer = (state, action) => {
-  if (action === 'REQUEST') {
-    return {
-      ...state,
-      loading: true,
-    }
-  }
-
-  if (action.type === 'SUCCESS') {
-    return {
-      ...state,
-      loading: false,
-      data: action.data,
-    };
-  }
-  return state
-}
 
 const useModel = () => {
   const useGet = (resource) => {
@@ -31,8 +14,26 @@ const useModel = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const carregar = async () => {
       dispatch({ type: "REQUEST" })
-      const res = await api.get(`${resource}.json`)
-      dispatch({ type: "SUCCESS", data: res.data })
+      await api.get(`${resource}.json?auth=${getToken()}`)
+        .then(res => {
+          dispatch({ type: "SUCCESS", data: res.data })
+        })
+        .catch(error => {
+          dispatch({ type: "FAILURE", error: error.response.data.error })
+        })
+      
+      // try {
+      //   dispatch({ type: "REQUEST" })
+      //   const res = await axios.get(`https://mymoney-c13cc.firebaseio.com/${resource}.json${getAuth()}`)
+
+      //   if (res.data.error && Object.keys(res.data.error).length > 0) {
+      //     dispatch({ type: "FAILURE", error: res.data.error })
+      //   } else {
+      //     dispatch({ type: "SUCCESS", data: res.data })
+      //   }
+      // } catch (error) {
+      //   dispatch({ type: "FAILURE", error: error.response.data.error })
+      // }
     }
 
     useEffect(() => {
@@ -52,7 +53,7 @@ const useModel = () => {
     const post = async(data) => {
       dispatch({ type: 'REQUEST' })
         
-      const res = await api.post(`${resource}.json`, data)
+      const res = await api.post(`${resource}.json?auth=${getToken()}`, data)
       dispatch({
         type: 'SUCCESS',
         data: res.data,
@@ -61,25 +62,25 @@ const useModel = () => {
     return [data, post]
   }
 
-  const useDelete = () => {
+  const useDelete = (resource) => {
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
 
-    const remove = async(resource) => {
+    const remove = async(id) => {
       dispatch({ type: 'REQUEST' })
 
-      await api.delete(`${resource}.json`)
+      await api.delete(`${resource}/${id}.json?auth=${getToken()}`)
       dispatch({ type: 'SUCCESS' })
     }
     return [data, remove]
   }
 
-  const usePatch = () => {
+  const usePatch = (resource) => {
     const [data, dispatch] = useReducer(reducer, INITIAL_STATE)
 
-    const patch = async (resource, data) => {
+    const patch = async (data) => {
       dispatch({ type: 'REQUEST' })
 
-      await api.patch(`${resource}.json`, data)
+      await api.patch(`${resource}.json?auth=${getToken()}`, data)
       dispatch({ type: 'SUCCESS' })
     }
     return [data, patch]
